@@ -38,13 +38,3 @@ sp-keystore = { version = "0.12.0", git = "https://github.com/paritytech/substra
 sp-runtime = { version = "6.0.0", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 substrate-frame-rpc-system = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 substrate-state-trie-migration-rpc = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
-sc-network = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
-# Frontier
-fc-db = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30" }
-fc-rpc = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30" }
-fc-rpc-core = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30" }
-fp-rpc = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30" }
-fp-storage = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30" }
-substrate-node-runtime = { version = "3.0.0-dev", path = "../runtime" }
-sc-transaction-pool = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
-
