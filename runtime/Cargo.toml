@@ -110,6 +110,21 @@ pallet-uniques = { version = "4.0.0-dev", default-features = false, git = "https
 pallet-vesting = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 pallet-whitelist = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 
+# Frontier
+fp-rpc = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+fp-self-contained = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+# Frontier FRAME
+pallet-base-fee = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30",default-features = false }
+pallet-dynamic-fee = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-ethereum = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-evm = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-evm-chain-id = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-evm-precompile-modexp = { git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-evm-precompile-sha3fips = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-evm-precompile-simple = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+pallet-hotfix-sufficients = {  git = "https://github.com/paritytech/frontier", branch = "polkadot-v0.9.30", default-features = false }
+
+
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.30" }
 
@@ -202,6 +217,19 @@ std = [
 	"sp-io/std",
 	"pallet-child-bounties/std",
 	"pallet-alliance/std",
+	# Frontier
+	"fp-rpc/std",
+	"fp-self-contained/std",
+	# Frontier FRAME
+	"pallet-base-fee/std",
+	"pallet-dynamic-fee/std",
+	"pallet-ethereum/std",
+	"pallet-evm/std",
+	"pallet-evm-chain-id/std",
+	"pallet-evm-precompile-modexp/std",
+	"pallet-evm-precompile-sha3fips/std",
+	"pallet-evm-precompile-simple/std",
+	"pallet-hotfix-sufficients/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
@@ -254,6 +282,9 @@ runtime-benchmarks = [
 	"pallet-vesting/runtime-benchmarks",
 	"pallet-whitelist/runtime-benchmarks",
 	"frame-system-benchmarking/runtime-benchmarks",
+	"pallet-ethereum/runtime-benchmarks",
+	"pallet-evm/runtime-benchmarks",
+	"pallet-hotfix-sufficients/runtime-benchmarks",
 ]
 try-runtime = [
 	"frame-try-runtime",
@@ -310,6 +341,9 @@ try-runtime = [
 	"pallet-uniques/try-runtime",
 	"pallet-vesting/try-runtime",
 	"pallet-whitelist/try-runtime",
+	"pallet-ethereum/try-runtime",
+	"pallet-evm/try-runtime",
+	"pallet-hotfix-sufficients/try-runtime",
 ]
 # Make contract callable functions marked as __unstable__ available. Do not enable
 # on live chains as those are subject to change.

@@ -17,14 +17,14 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 //! Substrate chain configurations.
-
+use std::{collections::BTreeMap, str::FromStr};
 use grandpa_primitives::AuthorityId as GrandpaId;
 use substrate_node_runtime::{
 	constants::currency::*, wasm_binary_unwrap, AuthorityDiscoveryConfig, BabeConfig,
 	BalancesConfig, Block, CouncilConfig, DemocracyConfig, ElectionsConfig, GrandpaConfig,
 	ImOnlineConfig, IndicesConfig, MaxNominations, NominationPoolsConfig, SessionConfig,
 	SessionKeys, SocietyConfig, StakerStatus, StakingConfig, SudoConfig, SystemConfig,
-	TechnicalCommitteeConfig,
+	TechnicalCommitteeConfig,EVMConfig,EVMChainIdConfig
 };
 use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_chain_spec::ChainSpecExtension;
@@ -33,12 +33,12 @@ use sc_telemetry::TelemetryEndpoints;
 use serde::{Deserialize, Serialize};
 use sp_authority_discovery::AuthorityId as AuthorityDiscoveryId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public, H160, U256};
 use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
 	Perbill,
 };
-
+pub use fp_evm::GenesisAccount;
 pub use substrate_node_runtime::GenesisConfig;
 pub use node_primitives::{AccountId, Balance, Signature};
 
@@ -177,7 +177,7 @@ fn staging_testnet_config_genesis() -> GenesisConfig {
 
 	let endowed_accounts: Vec<AccountId> = vec![root_key.clone()];
 
-	testnet_genesis(initial_authorities, vec![], root_key, Some(endowed_accounts))
+	testnet_genesis(initial_authorities, vec![], root_key, Some(endowed_accounts),1337)
 }
 
 /// Staging testnet config.
@@ -242,6 +242,7 @@ pub fn testnet_genesis(
 	initial_nominators: Vec<AccountId>,
 	root_key: AccountId,
 	endowed_accounts: Option<Vec<AccountId>>,
+	chain_id: u64,
 ) -> GenesisConfig {
 	let mut endowed_accounts: Vec<AccountId> = endowed_accounts.unwrap_or_else(|| {
 		vec![
@@ -369,6 +370,56 @@ pub fn testnet_genesis(
 			min_join_bond: 1 * DOLLARS,
 			..Default::default()
 		},
+		// EVM compatibility
+		evm_chain_id: EVMChainIdConfig { chain_id },
+		evm: EVMConfig {
+			accounts: {
+				let mut map = BTreeMap::new();
+				map.insert(
+					// H160 address of Alice dev account
+					// Derived from SS58 (42 prefix) address
+					// SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					// hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
+					// Using the full hex key, truncating to the first 20 bytes (the first 40 hex chars)
+					H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
+						.expect("internal H160 is valid; qed"),
+					GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+					},
+				);
+				map.insert(
+					// H160 address of CI test runner account
+					H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
+						.expect("internal H160 is valid; qed"),
+					GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+					},
+				);
+				map.insert(
+					// H160 address for benchmark usage
+					H160::from_str("1000000000000000000000000000000000000001")
+						.expect("internal H160 is valid; qed"),
+					GenesisAccount {
+						nonce: U256::from(1),
+						balance: U256::from(1_000_000_000_000_000_000_000_000u128),
+						storage: Default::default(),
+						code: vec![0x00],
+					},
+				);
+				map
+			},
+		},
+		ethereum: Default::default(),
+		dynamic_fee: Default::default(),
+		base_fee: Default::default(),
 	}
 }
 
@@ -378,6 +429,7 @@ fn development_config_genesis() -> GenesisConfig {
 		vec![],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
+		1337
 	)
 }
 
@@ -403,6 +455,7 @@ fn local_testnet_genesis() -> GenesisConfig {
 		vec![],
 		get_account_id_from_seed::<sr25519::Public>("Alice"),
 		None,
+		1337
 	)
 }
 
@@ -435,6 +488,7 @@ pub(crate) mod tests {
 			vec![],
 			get_account_id_from_seed::<sr25519::Public>("Alice"),
 			None,
+			1337
 		)
 	}
 

@@ -18,14 +18,16 @@
 
 //! Genesis Configuration.
 
+use std::{collections::BTreeMap, str::FromStr};
 use crate::keyring::*;
 use substrate_node_runtime::{
 	constants::currency::*, wasm_binary_unwrap, AccountId, BabeConfig, BalancesConfig,
 	GenesisConfig, GrandpaConfig, IndicesConfig, SessionConfig, SocietyConfig, StakerStatus,
-	StakingConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG,
+	StakingConfig, SystemConfig, BABE_GENESIS_EPOCH_CONFIG,EVMConfig,EVMChainIdConfig
 };
 use sp_keyring::{Ed25519Keyring, Sr25519Keyring};
 use sp_runtime::Perbill;
+use sp_core::{H160, U256};
 
 /// Create genesis runtime configuration for tests.
 pub fn config(code: Option<&[u8]>) -> GenesisConfig {
@@ -44,6 +46,7 @@ pub fn config_endowed(code: Option<&[u8]>, extra_endowed: Vec<AccountId>) -> Gen
 		(ferdie(), 100 * DOLLARS),
 	];
 
+	let chain_id:u64= 1337;
 	endowed.extend(extra_endowed.into_iter().map(|endowed| (endowed, 100 * DOLLARS)));
 
 	GenesisConfig {
@@ -95,5 +98,55 @@ pub fn config_endowed(code: Option<&[u8]>, extra_endowed: Vec<AccountId>) -> Gen
 		alliance: Default::default(),
 		alliance_motion: Default::default(),
 		nomination_pools: Default::default(),
+		// EVM compatibility
+		evm_chain_id: EVMChainIdConfig { chain_id },
+		evm: EVMConfig {
+			accounts: {
+				let mut map = BTreeMap::new();
+				map.insert(
+					// H160 address of Alice dev account
+					// Derived from SS58 (42 prefix) address
+					// SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
+					// hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
+					// Using the full hex key, truncating to the first 20 bytes (the first 40 hex chars)
+					H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
+						.expect("internal H160 is valid; qed"),
+					fp_evm::GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+					},
+				);
+				map.insert(
+					// H160 address of CI test runner account
+					H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
+						.expect("internal H160 is valid; qed"),
+					fp_evm::GenesisAccount {
+						balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
+							.expect("internal U256 is valid; qed"),
+						code: Default::default(),
+						nonce: Default::default(),
+						storage: Default::default(),
+					},
+				);
+				map.insert(
+					// H160 address for benchmark usage
+					H160::from_str("1000000000000000000000000000000000000001")
+						.expect("internal H160 is valid; qed"),
+					fp_evm::GenesisAccount {
+						nonce: U256::from(1),
+						balance: U256::from(1_000_000_000_000_000_000_000_000u128),
+						storage: Default::default(),
+						code: vec![0x00],
+					},
+				);
+				map
+			},
+		},
+		ethereum: Default::default(),
+		dynamic_fee: Default::default(),
+		base_fee: Default::default(),
 	}
 }
