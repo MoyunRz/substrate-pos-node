@@ -13,7 +13,7 @@ targets = ["x86_64-unknown-linux-gnu"]
 
 [dependencies]
 serde = { version = "1.0.139", features = ["derive"], optional = true }
-
+log = { version = "0.4.17", default-features = false }
 # Parity
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [
 	"derive",
@@ -53,7 +53,11 @@ frame-election-provider-support = { default-features = false, git = "https://git
 pallet-bags-list = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 pallet-election-provider-multi-phase = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 pallet-staking-reward-curve = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
-
+pallet-im-online = {default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
+pallet-offences = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
+pallet-offences-benchmarking = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25",optional = true }
+pallet-asset-tx-payment = { version = "4.0.0-dev",default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"}
+pallet-indices = { version = "4.0.0-dev",default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"}
 
 # Used for the node template's RPCs
 frame-system-rpc-runtime-api = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
@@ -80,7 +84,6 @@ pallet-evm-precompile-simple = { default-features = false, git = "https://github
 pallet-base-fee = { default-features = false, git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25" }
 pallet-dynamic-fee = { default-features = false, git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25" }
 pallet-hotfix-sufficients = { default-features = false, git = "https://github.com/paritytech/frontier.git", branch = "polkadot-v0.9.25" }
-
 # node permissions
 pallet-node-authorization = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 
@@ -138,6 +141,10 @@ std = [
 	"pallet-hotfix-sufficients/std",
 	"pallet-node-authorization/std",
 	"pallet-fee-multipliers/std",
+	"pallet-im-online/std",
+	"pallet-offences/std",
+	"pallet-indices/std",
+	"log/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
@@ -148,6 +155,8 @@ runtime-benchmarks = [
 	"pallet-grandpa/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
+	"pallet-im-online/runtime-benchmarks",
+	"pallet-offences-benchmarking",
 ]
 try-runtime = [
 	"frame-executive/try-runtime",

@@ -1,8 +1,9 @@
 use pevm_runtime::{
 	AccountId, BabeConfig, Balance, BalancesConfig, GenesisConfig, GrandpaConfig,
 	NodeAuthorizationConfig, SessionConfig, SessionKeys, Signature, StakerStatus, StakingConfig,
-	SudoConfig, SystemConfig, DOLLARS, WASM_BINARY,
+	SudoConfig, SystemConfig, DOLLARS, WASM_BINARY,ImOnlineConfig
 };
+use pallet_im_online::sr25519::AuthorityId as ImOnlineId;
 use sc_service::ChainType;
 use sp_consensus_babe::AuthorityId as BabeId;
 use sp_core::{sr25519, OpaquePeerId, Pair, Public, H160, U256};
@@ -33,12 +34,13 @@ where
 	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
-/// Generate an Aura authority key.
-pub fn authority_keys_from_seed(s: &str) -> (AccountId, BabeId, GrandpaId) {
+/// Generate an Babe authority key.
+pub fn authority_keys_from_seed(s: &str) -> (AccountId, BabeId, GrandpaId,ImOnlineId) {
 	(
 		get_account_id_from_seed::<sr25519::Public>(s),
 		get_from_seed::<BabeId>(s),
 		get_from_seed::<GrandpaId>(s),
+		get_from_seed::<ImOnlineId>(s)
 	)
 }
 
@@ -143,7 +145,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, BabeId, GrandpaId)>,
+	initial_authorities: Vec<(AccountId, BabeId, GrandpaId,ImOnlineId)>,
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 	_enable_println: bool,
@@ -167,6 +169,7 @@ fn testnet_genesis(
 			authorities: vec![],
 			epoch_config: Some(pevm_runtime::BABE_GENESIS_EPOCH_CONFIG),
 		},
+		im_online: ImOnlineConfig { keys: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		session: SessionConfig {
 			keys: initial_authorities
@@ -194,72 +197,6 @@ fn testnet_genesis(
 		},
 		transaction_payment: Default::default(),
 		evm: Default::default(),
-		// evm: EVMConfig {
-		// 	accounts: {
-		// 		let mut map = BTreeMap::new();
-		// 		map.insert(
-		// 			// H160 address of Alice dev account
-		// 			// Derived from SS58 (42 prefix) address
-		// 			// SS58: 5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY
-		// 			// hex: 0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d
-		// 			// Using the full hex key, truncating to the first 20 bytes (the first 40 hex
-		// 			// chars)
-		// 			H160::from_str("d43593c715fdd31c61141abd04a99fd6822c8558")
-		// 				.expect("internal H160 is valid; qed"),
-		// 			fp_evm::GenesisAccount {
-		// 				balance: U256::from(u128::max_value()),
-		// 				code: Default::default(),
-		// 				nonce: Default::default(),
-		// 				storage: Default::default(),
-		// 			},
-		// 		);
-		// 		map.insert(
-		// 			// H160 address of Heath dev account
-		// 			// Derived from SS58 (42 prefix) address
-		// 			// Public Address: 0x931f3600a299fd9B24cEfB3BfF79388D19804BeA
-		// 			// Private Key:
-		// 			// 0x0d6dcaaef49272a5411896be8ad16c01c35d6f8c18873387b71fbc734759b0ab Using the
-		// 			// full hex key, truncating to the first 20 bytes (the first 40 hex chars)
-		// 			H160::from_str("931f3600a299fd9B24cEfB3BfF79388D19804BeA")
-		// 				.expect("internal H160 is valid; qed"),
-		// 			fp_evm::GenesisAccount {
-		// 				balance: U256::from(u128::max_value()),
-		// 				code: Default::default(),
-		// 				nonce: Default::default(),
-		// 				storage: Default::default(),
-		// 			},
-		// 		);
-		// 		map.insert(
-		// 			// H160 address of Ethen dev account
-		// 			// Derived from SS58 (42 prefix) address
-		// 			// Public Address: 0xFf64d3F6efE2317EE2807d223a0Bdc4c0c49dfDB
-		// 			// Private Key:
-		// 			// 0x7dce9bc8babb68fec1409be38c8e1a52650206a7ed90ff956ae8a6d15eeaaef4 Using the
-		// 			// full hex key, truncating to the first 20 bytes (the first 40 hex chars)
-		// 			H160::from_str("Ff64d3F6efE2317EE2807d223a0Bdc4c0c49dfDB")
-		// 				.expect("internal H160 is valid; qed"),
-		// 			fp_evm::GenesisAccount {
-		// 				balance: U256::default(),
-		// 				code: Default::default(),
-		// 				nonce: Default::default(),
-		// 				storage: Default::default(),
-		// 			},
-		// 		);
-		// 		map.insert(
-		// 			// H160 address of CI test runner account
-		// 			H160::from_str("6be02d1d3665660d22ff9624b7be0551ee1ac91b")
-		// 				.expect("internal H160 is valid; qed"),
-		// 			fp_evm::GenesisAccount {
-		// 				balance: U256::from_str("0xffffffffffffffffffffffffffffffff")
-		// 					.expect("internal U256 is valid; qed"),
-		// 				code: Default::default(),
-		// 				nonce: Default::default(),
-		// 				storage: Default::default(),
-		// 			},
-		// 		);
-		// 		map
-		// 	},
-		// },
 		ethereum: Default::default(),
 		base_fee: Default::default(),
 		dynamic_fee: Default::default(),

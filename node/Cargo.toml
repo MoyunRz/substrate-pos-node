@@ -58,6 +58,7 @@ sc-consensus-babe = { git = "https://github.com/paritytech/substrate.git", branc
 sp-consensus-babe = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 sc-consensus-uncles = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 sp-authorship = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
+pallet-im-online = {default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
 
 # These dependencies are used for the node template's RPCs
 sc-rpc = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
